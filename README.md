@@ -51,14 +51,14 @@ FIND_TREE/
 │   ├── index.js          # Express app, routes, server startup
 │   ├── db.js             # MongoDB connection and CRUD operations
 │   ├── ngrokTunnel.js    # ngrok tunnel setup with Basic Auth
-    ├── .env              # Environment variables (git-ignored)
+|    ├── .env              # Environment variables (git-ignored)
 │   └── getIp.js          # Reads local Wi-Fi IP from OS interfaces
 │
 ├── public/
 │   ├── DUX.HTML          # Main UI: Leaflet map + forms
 │   ├── feature.js        # User actions: add, reach, delete tree,alert
 │   ├── show_function.js  # Map markers and select list rendering
-    ├── alert.wav         # Sound played on danger alert
+|    ├── alert.wav         # Sound played on danger alert
 │   └── style.css         # Layout, spinner, form styles
 │
 ├── package.json                 
@@ -111,7 +111,7 @@ NGROK_PASS=your_password
 ## Usage
 
 ```bash
-node server/index.js
+node backend/index.js
 ```
 
 On startup:
