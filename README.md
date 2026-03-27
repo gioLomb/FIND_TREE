@@ -47,21 +47,21 @@ The interface auto-refreshes markers and the select list after every add/delete 
 
 ```
 FIND_TREE/
-├── server/
+├── backend/
 │   ├── index.js          # Express app, routes, server startup
 │   ├── db.js             # MongoDB connection and CRUD operations
 │   ├── ngrokTunnel.js    # ngrok tunnel setup with Basic Auth
+    ├── .env              # Environment variables (git-ignored)
 │   └── getIp.js          # Reads local Wi-Fi IP from OS interfaces
 │
 ├── public/
 │   ├── DUX.HTML          # Main UI: Leaflet map + forms
-│   ├── feature.js        # User actions: add, reach, delete tree, alert
+│   ├── feature.js        # User actions: add, reach, delete tree,alert
 │   ├── show_function.js  # Map markers and select list rendering
+    ├── alert.wav         # Sound played on danger alert
 │   └── style.css         # Layout, spinner, form styles
 │
-├── alert.wav             # Sound played on danger alert
-├── package.json
-├── .env                  # Environment variables (git-ignored)
+├── package.json                 
 └── .gitignore
 ```
 
