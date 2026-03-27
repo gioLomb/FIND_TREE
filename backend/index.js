@@ -23,12 +23,11 @@ let publicDir=__dirname.split('\\').slice(0,(__dirname.split('\\')).length-1).jo
 console.log(publicDir)
 app.use(express.static(path.join(publicDir, 'public')));
 
-// 📄 Route principale
+// home
 app.get('/', (req, res) => {
   res.sendFile(path.join(publicDir, 'public', 'DUX.HTML'));
 });
 
-// 🌳 Ottieni albero filtrato per ID
 app.get('/get_tree', async (req, res) => {
   try {
     const id = req.query.id;
@@ -40,7 +39,6 @@ app.get('/get_tree', async (req, res) => {
   }
 });
 
-// 🌳 Ottieni tutti gli alberi
 app.get('/get_all_trees', async (req, res) => {
   try {
     const result = await getAllTreesFromDb();
@@ -50,7 +48,6 @@ app.get('/get_all_trees', async (req, res) => {
   }
 });
 
-// 🚨 Allarme sonoro
 app.get('/danger_alert', (req, res) => {
   const soundPath = path.join(publicDir, 'alert.wav');
   const psCommand = `powershell -c (New-Object Media.SoundPlayer '${soundPath}').PlaySync();`;
@@ -64,7 +61,6 @@ app.get('/danger_alert', (req, res) => {
   });
 });
 
-// 🗑️ Elimina albero
 app.post('/delete_tree', async (req, res) => {
   try {
     const idTree = req.body.idTree;
@@ -75,7 +71,6 @@ app.post('/delete_tree', async (req, res) => {
   }
 });
 
-// ➕ Aggiungi albero
 app.post('/add_tree', async (req, res) => {
   try {
     const result = await addTreeInDb(req.body);
@@ -87,7 +82,6 @@ app.post('/add_tree', async (req, res) => {
   }
 });
 
-// ✅ Avvia server Express e poi Ngrok
 app.listen(port, async () => {
   console.log(`Server running at http://${localIp}:${port}/`);
 
@@ -99,7 +93,7 @@ app.listen(port, async () => {
   }
 });
 
-// 🔒 Chiudi connessione MongoDB in caso di interruzione
+//in caso di interruzione chiudi connessione db
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(signal => {
   process.on(signal, async () => {
     await closeDb();
