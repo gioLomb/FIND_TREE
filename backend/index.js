@@ -16,18 +16,18 @@ const app = express();
 const port = 8080;
 const localIp = getLocalIp();
 
-// Middleware per leggere JSON
 app.use(express.json());
-// Middleware per servire file statici
+
+// Serve i file statici dalla cartella /public
 const publicDir = path.join(__dirname, '..', 'public');
 app.use(express.static(publicDir));
 
-// 📄 Route principale
+// Pagina principale
 app.get('/', (req, res) => {
   res.sendFile(path.join(publicDir, 'DUX.HTML'));
 });
 
-// 🌳 Ottieni albero filtrato per ID
+// Restituisce un singolo albero per ID
 app.get('/get_tree', async (req, res) => {
   try {
     const id = req.query.id;
@@ -39,7 +39,7 @@ app.get('/get_tree', async (req, res) => {
   }
 });
 
-// 🌳 Ottieni tutti gli alberi
+// Restituisce tutti gli alberi salvati
 app.get('/get_all_trees', async (req, res) => {
   try {
     const result = await getAllTreesFromDb();
@@ -49,7 +49,7 @@ app.get('/get_all_trees', async (req, res) => {
   }
 });
 
-// 🚨 Allarme sonoro
+// Riproduce alert.wav sulla macchina host tramite PowerShell
 app.get('/danger_alert', (req, res) => {
   const soundPath = path.join(publicDir, 'alert.wav');
   const psCommand = `powershell -c (New-Object Media.SoundPlayer '${soundPath}').PlaySync();`;
@@ -63,7 +63,7 @@ app.get('/danger_alert', (req, res) => {
   });
 });
 
-// 🗑️ Elimina albero
+// Elimina un albero per ID
 app.post('/delete_tree', async (req, res) => {
   try {
     const idTree = req.body.idTree;
@@ -74,7 +74,7 @@ app.post('/delete_tree', async (req, res) => {
   }
 });
 
-// ➕ Aggiungi albero
+// Aggiunge un nuovo albero con nome e coordinate GPS
 app.post('/add_tree', async (req, res) => {
   try {
     const { tree, lat, lng } = req.body;
@@ -90,7 +90,7 @@ app.post('/add_tree', async (req, res) => {
   }
 });
 
-// ✅ Avvia server Express e poi Ngrok
+// Avvia il server Express, poi apre il tunnel ngrok
 app.listen(port, async () => {
   console.log(`Server running at http://${localIp}:${port}/`);
 
@@ -102,7 +102,7 @@ app.listen(port, async () => {
   }
 });
 
-// 🔒 Chiudi connessione MongoDB in caso di interruzione
+// Chiude la connessione MongoDB all'uscita del processo
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(signal => {
   process.on(signal, async () => {
     await closeDb();

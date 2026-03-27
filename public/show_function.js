@@ -1,9 +1,10 @@
+// Recupera tutti gli alberi dal server
 function loadTrees() {
   return fetch('/get_all_trees').then(res => res.json());
 }
 
+// Rimuove i marker esistenti e li ridisegna con i dati aggiornati
 function printTreesMarkers() {
-  // rimuovi marker precedenti
   map.eachLayer(layer => {
     if (layer instanceof L.Marker && layer !== userMarker) {
       map.removeLayer(layer);
@@ -17,6 +18,7 @@ function printTreesMarkers() {
   }).catch(err => alert('errore nella stampa dei marker ' + err));
 }
 
+// Popola il dropdown con gli alberi salvati
 function printTreesSelect() {
   loadTrees().then(trees => {
     let select = document.getElementById('sel_tree');
@@ -30,9 +32,10 @@ function printTreesSelect() {
   }).catch(err => alert('errore nella richiesta per gli alberi ' + err));
 }
 
+// Aggiorna in una sola fetch sia i marker sulla mappa che le opzioni del dropdown
 function refreshTrees() {
   loadTrees().then(trees => {
-    // aggiorna marker
+    // Aggiorna marker
     map.eachLayer(layer => {
       if (layer instanceof L.Marker && layer !== userMarker) {
         map.removeLayer(layer);
@@ -42,7 +45,7 @@ function refreshTrees() {
       L.marker([tree.lat, tree.lng]).addTo(map).bindPopup(`${tree.tree}`);
     });
 
-    // aggiorna select
+    // Aggiorna select
     let select = document.getElementById('sel_tree');
     select.innerHTML = '';
     trees.forEach(tree => {

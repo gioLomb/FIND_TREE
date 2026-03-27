@@ -7,67 +7,66 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link rel="stylesheet" type="text/css" href="style.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-   <script src="feature.js"></script>
-      <script src="show_function.js"></script>
-
+  <script src="feature.js"></script>
+  <script src="show_function.js"></script>
 </head>
-<body onload="printTreesMarkers(); printTreesSelect()">
-  <button type="button" onclick="playDangerAlert()">PERICOLO!!!</button>
-  <!-- Overlay Loading Spinner -->
-<div id="loading-overlay">
-  <div class="spinner"></div>
-    <div class="loading-text">Attendi...</div>
 
-</div>
+<!-- Inizializza marker e dropdown al caricamento della pagina -->
+<body onload="printTreesMarkers(); printTreesSelect()">
+
+  <button type="button" onclick="playDangerAlert()">PERICOLO!!!</button>
+
+  <!-- Overlay mostrato durante l'acquisizione GPS -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Attendi...</div>
+  </div>
 
   <div id="map"></div>
 
-   
   <script>
-    
+    // Inizializza la mappa Leaflet con layer satellitare Esri
     const map = L.map('map').setView([41.1642, 16.2105], 16);
-//aggiungi foto mappa come layer
-   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-  attribution: 'Tiles © Esri'
-}).addTo(map);
 
- 
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles © Esri'
+    }).addTo(map);
 
-  let userMarker = null;
+    let userMarker = null;
 
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition( //ottiene continuamente posizione e esegue callback in caso di cambiamenti
-      position => {
-        let lat = position.coords.latitude;
-        let lng = position.coords.longitude;
+    // Segue la posizione GPS in tempo reale e aggiorna il marker utente
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(
+        position => {
+          let lat = position.coords.latitude;
+          let lng = position.coords.longitude;
 
-        console.log(`Nuova posizione: ${lat}, ${lng}`);
+          console.log(`Nuova posizione: ${lat}, ${lng}`);
 
-        if (userMarker) {
-          userMarker.setLatLng([lat, lng]);
-        } else {
-          userMarker = L.marker([lat, lng]).addTo(map);
+          if (userMarker) {
+            userMarker.setLatLng([lat, lng]);  // aggiorna posizione esistente
+          } else {
+            userMarker = L.marker([lat, lng]).addTo(map);  // primo fix GPS
+          }
+
+          map.setView([lat, lng]);
+        },
+        error => {
+          console.error('Errore nella geolocalizzazione:', error);
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 0,   // nessun caching della posizione
+          timeout: 10000
         }
-
-        map.setView([lat, lng]);
-      },
-      error => {
-        console.error('Errore nella geolocalizzazione:', error);
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 0,  //evita caching
-        timeout: 10000
-      }
-    );
-  } else {
-    alert("Geolocalizzazione non supportata dal browser.");
-  }
-  
-
+      );
+    } else {
+      alert("Geolocalizzazione non supportata dal browser.");
+    }
   </script>
 
   <div class="container">
+    <!-- aggiunta albero -->
     <div class="form-box">
       <h1>AGGIUNGI ALBERO</h1>
       <form>
@@ -76,18 +75,15 @@
       </form>
     </div>
 
-    <!-- Linea divisoria -->
     <div class="divider"></div>
 
-    <!-- Form Raggiungi Albero -->
+    <!-- navigazione ed eliminazione albero -->
     <div class="form-box">
       <h1>RAGGIUNGI ALBERO</h1>
       <form>
-        <select id="sel_tree">
-        </select>
+        <select id="sel_tree"></select>
         <button type="button" onclick="reachTree()">RAGGIUNGI</button>
         <button type="button" onclick="deleteTree()">ELIMINA</button>
-
       </form>
     </div>
   </div>
