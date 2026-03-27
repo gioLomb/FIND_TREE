@@ -7,7 +7,7 @@ function startTunnel(){
     if(!NGROK_AUTHTOKEN) reject('devi autenticarti con il token')
     if(!NGROK_USER || !NGROK_PASS) reject('CREDENZIALI SCORRETTE')
       
-    ngrok.forward({addr:8080,proto:'http',authtoken:NGROK_AUTHTOKEN,}) //basic_auth:[`${NGROK_USER}:${NGROK_PASS}`]
+    ngrok.forward({addr:8080,proto:'http',authtoken:NGROK_AUTHTOKEN,basic_auth:[`${NGROK_USER}:${NGROK_PASS}`]}) 
     .then(forwarder=>resolve(forwarder.url()))
     .catch(err=>reject(err))
     
@@ -15,8 +15,4 @@ function startTunnel(){
   }
   )
 }
-module.exports=startTunnel
-
-
 module.exports = startTunnel;
-
