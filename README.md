@@ -1,6 +1,6 @@
 # FIND_TREE 🌳
 
-**FIND_TREE** is a field tool for **geolocating and navigating to trees** (or any outdoor points of interest). It runs as a local Node.js server on a Windows machine and exposes a web interface accessible from any device — including smartphones in the field — via an ngrok public tunnel.
+**FIND_TREE** is a field tool for geolocating and navigating to trees (or any outdoor points of interest). It runs as a local Node.js server on a Windows machine and exposes a web interface accessible from any device — including smartphones in the field — via an ngrok public tunnel.
 
 ---
 
@@ -8,13 +8,14 @@
 
 From the browser interface the user can:
 
-- **View a satellite map** (Esri World Imagery via Leaflet) centered on the current GPS position
-- **Add a tree**: enter a name, capture the current GPS position, and save it to the database — a marker is placed on the map immediately
-- **Navigate to a tree**: select a saved tree from the dropdown list and draw a red line on the map from the current position to the tree's coordinates
-- **Delete a tree**: remove a saved tree from the database and update the map
-- **Trigger a danger alert**: press a button that calls the server, which plays `alert.wav` on the host machine via PowerShell
+- **View a satellite map** (Esri World Imagery via Leaflet) centered on the current GPS position.
+- **Add a tree:** enter a name, capture the current GPS position, and save it to the database.
+  > **Note:** A loading spinner is shown while the GPS fix is being acquired. To ensure maximum location accuracy, the system may take several seconds to stabilize the coordinates before saving.
+- **Navigate to a tree:** select a saved tree from the dropdown list and draw a red line on the map from the current position to the tree's coordinates.
+- **Delete a tree:** remove a saved tree from the database and update the map.
+- **Trigger a danger alert:** press a button that calls the server, which plays `alert.wav` on the host machine via PowerShell.
 
-The interface auto-refreshes markers and the select list after every add/delete operation. A loading spinner is shown while the GPS fix is being acquired.
+The interface auto-refreshes markers and the select list after every add/delete operation.
 
 ---
 
@@ -22,12 +23,12 @@ The interface auto-refreshes markers and the select list after every add/delete 
 
 ```
 ┌─────────────────────────────────────────┐
-│              Host machine (Windows)     │
+│         Host machine (Windows)          │
 │                                         │
 │  Node.js / Express  ──►  MongoDB        │
 │       :8080                             │
 │         │                               │
-│      ngrok tunnel (Basic Auth)          │
+│       ngrok tunnel (Basic Auth)         │
 └──────────────┬──────────────────────────┘
                │  public HTTPS URL
                ▼
@@ -35,10 +36,10 @@ The interface auto-refreshes markers and the select list after every add/delete 
          (Leaflet map UI)
 ```
 
-- The server runs on port **8080** and detects the local Wi-Fi IP automatically (`getIp.js`)
-- ngrok forwards port 8080 to a public HTTPS URL protected by **HTTP Basic Auth**
-- MongoDB runs locally on `mongodb://localhost:27017/`, database `find_tree`, collection `trees`
-- Each tree document stores: `{ tree: string, lat: number, lng: number }`
+- The server runs on port **8080** and detects the local Wi-Fi IP automatically (`getIp.js`).
+- **ngrok** forwards port 8080 to a public HTTPS URL protected by HTTP Basic Auth.
+- **MongoDB** runs locally on `mongodb://localhost:27017/`, database `find_tree`, collection `trees`.
+- Each tree document stores: `{ tree: string, lat: number, lng: number }`.
 
 ---
 
@@ -68,24 +69,24 @@ FIND_TREE/
 
 ## API endpoints
 
-| Method | Route            | Description                                       |
-|--------|------------------|---------------------------------------------------|
-| GET    | `/`              | Serves the main HTML interface                    |
-| GET    | `/get_all_trees` | Returns all trees as a JSON array                 |
-| GET    | `/get_tree?id=`  | Returns a single tree by MongoDB ObjectId         |
-| POST   | `/add_tree`      | Inserts a tree `{ tree, lat, lng }` into the DB   |
-| POST   | `/delete_tree`   | Deletes a tree by `{ idTree }` (MongoDB ObjectId) |
-| GET    | `/danger_alert`  | Plays `alert.wav` on the host machine via PowerShell |
+| Method | Route | Description |
+|--------|-------|-------------|
+| `GET` | `/` | Serves the main HTML interface |
+| `GET` | `/get_all_trees` | Returns all trees as a JSON array |
+| `GET` | `/get_tree?id=` | Returns a single tree by MongoDB ObjectId |
+| `POST` | `/add_tree` | Inserts a tree `{ tree, lat, lng }` into the DB |
+| `POST` | `/delete_tree` | Deletes a tree by `{ idTree }` (MongoDB ObjectId) |
+| `GET` | `/danger_alert` | Plays `alert.wav` on the host machine via PowerShell |
 
 ---
 
 ## Requirements
 
-- **Windows** (the sound alert uses PowerShell's `Media.SoundPlayer`)
-- **Node.js** >= 18
-- **MongoDB** running locally on port 27017
-- A valid [ngrok](https://ngrok.com/) account and auth token
-- A browser with **Geolocation** support (required for adding trees and navigation)
+- Windows (the sound alert uses PowerShell's `Media.SoundPlayer`)
+- Node.js >= 18
+- MongoDB running locally on port 27017
+- A valid ngrok account and auth token
+- A browser with Geolocation support (required for adding trees and navigation)
 
 ---
 
@@ -114,22 +115,8 @@ node server/index.js
 ```
 
 On startup:
-1. The Express server starts on port 8080
+
+1. The Express server starts on **port 8080**
 2. The local Wi-Fi IP is printed to the console
 3. A public ngrok URL is printed — share it with any device in the field
 4. Open the URL in a browser, accept the Basic Auth prompt, and start mapping trees
-
----
-
-## Dependencies
-
-| Package        | Purpose                                                               |
-|----------------|-----------------------------------------------------------------------|
-| `express`      | HTTP server and routing                                               |
-| `@ngrok/ngrok` | Programmatic ngrok tunnel with Basic Auth                             |
-| `mongodb`      | MongoDB Node.js driver for CRUD operations                            |
-| `dotenv`       | Loads environment variables from `.env`                               |
-| `body-parser`  | Parses incoming JSON request bodies                                   |
-
-Frontend uses **Leaflet.js** (CDN) with the Esri satellite tile layer — no build step required.
-
