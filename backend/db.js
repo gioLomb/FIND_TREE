@@ -1,16 +1,18 @@
-const { connect } = require('@ngrok/ngrok');
 const {MongoClient, ObjectId}=require('mongodb')
 const client= new MongoClient('mongodb://localhost:27017/')
+let connectionPromise = null;
 let collection;
+
 async function connectDb(){
-    if(!client.topology?.isConnected()){
-       await client.connect()
-       let db=client.db('find_tree')
-        collection=db.collection('trees')
-       console.log('CONNESSO')
+    if(!connectionPromise){
+        connectionPromise = client.connect().then(()=>{
+            const db = client.db('find_tree')
+            collection = db.collection('trees')
+            console.log('CONNESSO')
+        })
     }
-       return collection
-   
+    await connectionPromise
+    return collection
 }
 async function deleteTreeFromDb(id){
     try{

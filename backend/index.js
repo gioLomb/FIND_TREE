@@ -19,15 +19,15 @@ const localIp = getLocalIp();
 // Middleware per leggere JSON
 app.use(express.json());
 // Middleware per servire file statici
-let publicDir=__dirname.split('\\').slice(0,(__dirname.split('\\')).length-1).join('\\')
-console.log(publicDir)
-app.use(express.static(path.join(publicDir, 'public')));
+const publicDir = path.join(__dirname, '..', 'public');
+app.use(express.static(publicDir));
 
-// home
+// 📄 Route principale
 app.get('/', (req, res) => {
-  res.sendFile(path.join(publicDir, 'public', 'DUX.HTML'));
+  res.sendFile(path.join(publicDir, 'DUX.HTML'));
 });
 
+// 🌳 Ottieni albero filtrato per ID
 app.get('/get_tree', async (req, res) => {
   try {
     const id = req.query.id;
@@ -39,6 +39,7 @@ app.get('/get_tree', async (req, res) => {
   }
 });
 
+// 🌳 Ottieni tutti gli alberi
 app.get('/get_all_trees', async (req, res) => {
   try {
     const result = await getAllTreesFromDb();
@@ -48,6 +49,7 @@ app.get('/get_all_trees', async (req, res) => {
   }
 });
 
+// 🚨 Allarme sonoro
 app.get('/danger_alert', (req, res) => {
   const soundPath = path.join(publicDir, 'alert.wav');
   const psCommand = `powershell -c (New-Object Media.SoundPlayer '${soundPath}').PlaySync();`;
@@ -61,6 +63,7 @@ app.get('/danger_alert', (req, res) => {
   });
 });
 
+// 🗑️ Elimina albero
 app.post('/delete_tree', async (req, res) => {
   try {
     const idTree = req.body.idTree;
@@ -71,17 +74,23 @@ app.post('/delete_tree', async (req, res) => {
   }
 });
 
+// ➕ Aggiungi albero
 app.post('/add_tree', async (req, res) => {
   try {
-    const result = await addTreeInDb(req.body);
+    const { tree, lat, lng } = req.body;
+    if (!tree || typeof lat !== 'number' || typeof lng !== 'number') {
+      return res.status(400).send('Dati mancanti o non validi');
+    }
+    const result = await addTreeInDb({ tree, lat, lng });
     console.log('risultato inserimento: ', result);
-    res.json(req.body);
+    res.json({ tree, lat, lng });
   } catch (err) {
     console.error('Errore nell\'inserimento:', err);
     res.status(500).send('Errore server aggiunta albero: ' + err);
   }
 });
 
+// ✅ Avvia server Express e poi Ngrok
 app.listen(port, async () => {
   console.log(`Server running at http://${localIp}:${port}/`);
 
@@ -93,11 +102,10 @@ app.listen(port, async () => {
   }
 });
 
-//in caso di interruzione chiudi connessione db
+// 🔒 Chiudi connessione MongoDB in caso di interruzione
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(signal => {
   process.on(signal, async () => {
     await closeDb();
     process.exit(0);
   });
 });
-
