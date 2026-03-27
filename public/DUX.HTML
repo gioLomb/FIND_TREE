@@ -11,7 +11,7 @@
       <script src="show_function.js"></script>
 
 </head>
-<body onload="printTreesMarkers()">
+<body onload="printTreesMarkers(); printTreesSelect()">
   <button type="button" onclick="playDangerAlert()">PERICOLO!!!</button>
   <!-- Overlay Loading Spinner -->
 <div id="loading-overlay">
@@ -25,7 +25,7 @@
    
   <script>
     
-    const map = L.map('map').setView([0,0], 2);
+    const map = L.map('map').setView([41.1642, 16.2105], 16);
 //aggiungi foto mappa come layer
    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Tiles © Esri'
@@ -76,13 +76,14 @@
       </form>
     </div>
 
+    <!-- Linea divisoria -->
     <div class="divider"></div>
 
+    <!-- Form Raggiungi Albero -->
     <div class="form-box">
       <h1>RAGGIUNGI ALBERO</h1>
       <form>
         <select id="sel_tree">
-          <script>printTreesSelect()</script>
         </select>
         <button type="button" onclick="reachTree()">RAGGIUNGI</button>
         <button type="button" onclick="deleteTree()">ELIMINA</button>

@@ -15,9 +15,8 @@ function addTreeWithPosition(){
         body:JSON.stringify({tree,lat,lng})  //passaggio come stringa poichè viene utilizzato il metodo json() per leggere
       }).then(res=>res.json()).then(data=>{
         console.log(data);
-        //aggiornamento marker e select
-        printTreesMarkers()
-        printTreesSelect()
+        //aggiornamento marker e select con una fetch sola
+        refreshTrees()
         document.getElementById('tree').value=''  //svuotiamo l'input
         document.getElementById('loading-overlay').style.display = 'none'; //disattiviamo caricamento
         }).catch(err=>alert('errore per aggiunta albero '+err))
@@ -46,9 +45,8 @@ function addTreeWithPosition(){
       body:JSON.stringify({idTree})
     }).then(res=>res.json()).then(data=>{
       console.log('record eliminati:',data)
-      //aggiornamento select e marker
-       printTreesSelect()
-       printTreesMarkers()
+      //aggiornamento select e marker con una fetch sola
+       refreshTrees()
     }).catch(err=>alert('errore nell\'eliminazione '+err))
   }
   function playDangerAlert(){
